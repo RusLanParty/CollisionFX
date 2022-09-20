@@ -1,0 +1,9 @@
+D:\Visual Studio\Repos\CrashBlur\bin\Debug\CollisionFX.dll
+D:\Visual Studio\Repos\CrashBlur\bin\Debug\CollisionFX.pdb
+D:\Visual Studio\Repos\CrashBlur\bin\Debug\ScriptHookVDotNet3.dll
+D:\Visual Studio\Repos\CrashBlur\bin\Debug\ScriptHookVDotNet3.xml
+D:\Visual Studio\Repos\CrashBlur\obj\Debug\CollisionFX.csproj.AssemblyReference.cache
+D:\Visual Studio\Repos\CrashBlur\obj\Debug\CollisionFX.csproj.CoreCompileInputs.cache
+D:\Visual Studio\Repos\CrashBlur\obj\Debug\CollisionFX.csproj.CopyComplete
+D:\Visual Studio\Repos\CrashBlur\obj\Debug\CollisionFX.dll
+D:\Visual Studio\Repos\CrashBlur\obj\Debug\CollisionFX.pdb
