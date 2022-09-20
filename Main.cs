@@ -36,7 +36,7 @@ namespace CrashBlur
 
 public Main()
         {
-            camType = Settings.GetValue("SETTINGS", "ShakeType", 200);
+            camType = Settings.GetValue("SETTINGS", "ShakeType", 0);
             fp = Settings.GetValue("SETTINGS", "FirstPersonOnly", false);
             Tick += onTick;
 
