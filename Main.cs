@@ -68,14 +68,9 @@ public Main()
                     force = force * -1;
                 }
 
-
-
             }
             if ((force > 2) && (car.HasCollided) || (tth > 0))
             {
-
-
-
 
                 //FLASH
 
@@ -96,9 +91,6 @@ public Main()
                 }
 
                 //\FLASH
-
-
-
 
 
                 if (force > 2 || (tth > 0))
@@ -131,9 +123,7 @@ public Main()
                         i++;
                     }
 
-
                     force = force + tth;
-
 
                     i = 0;
                     mod = 1.0f;
@@ -167,14 +157,9 @@ public Main()
                                 time = Game.GameTime;
                                 mod = 1.0f;
                             }
-
-
                         }
                     }
                 }
-
-
-
             }
         }
 
@@ -197,8 +182,6 @@ public Main()
                     effect();
                 }
                
-               
-               
             } else
             {
                 i = 0;
@@ -207,9 +190,6 @@ public Main()
                 inRec = false;
                 
             }
-         
-
-
         }
     }
 }
