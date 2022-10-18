@@ -38,7 +38,7 @@ public Main()
             fp = Settings.GetValue("SETTINGS", "FirstPersonOnly", false);
             flashThresh = Settings.GetValue("SETTINGS", "FlashThreshold", 1.0f);
             effectThresh = Settings.GetValue("SETTINGS", "BlurThreshold", 2.0f);
-            effectType = Settings.GetValue("SETTINGS", "effectType", 0);
+            effectType = Settings.GetValue("SETTINGS", "effectType", 2);
             Tick += onTick;
 
         }
@@ -118,11 +118,17 @@ public Main()
                 switch (effectType)
                 {
                     case 0:
+                        //Function.Call(Hash._CLEAR_EXTRA_TIMECYCLE_MODIFIER);
                         Function.Call(Hash.SET_TIMECYCLE_MODIFIER, "NG_filmic18");
                          break;
 
                     case 1:
+                        //Function.Call(Hash._CLEAR_EXTRA_TIMECYCLE_MODIFIER);
                         Function.Call(Hash.SET_TIMECYCLE_MODIFIER, "hud_def_blur");
+                        break;
+                    case 2:
+                        Function.Call(Hash.SET_TIMECYCLE_MODIFIER, "NG_filmic18");
+                        Function.Call(Hash._SET_EXTRA_TIMECYCLE_MODIFIER, "hud_def_blur");
                         break;
                 }
                 
@@ -143,10 +149,11 @@ public Main()
                 mod = 1.0f;
                 tth = force;
                 dif = 1 / tth;
-
+                
                 while (force >= i)
                 {
                     Function.Call(Hash.SET_TIMECYCLE_MODIFIER_STRENGTH, (float)mod);
+                    //Function.Call(Hash._SET_EXTRA_TIMECYCLE_MODIFIER_STRENGTH, (float)mod);
                     tth = force - i;
                     Wait(1);
                     mod = mod - dif;
