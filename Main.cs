@@ -29,7 +29,8 @@ namespace CollisionFX
         double flashThresh;
         double effectThresh;
         int effectType;
-        
+        bool flashEnabled;
+
 
 
 public Main()
@@ -39,6 +40,7 @@ public Main()
             flashThresh = Settings.GetValue("SETTINGS", "FlashThreshold", 1.0f);
             effectThresh = Settings.GetValue("SETTINGS", "BlurThreshold", 2.0f);
             effectType = Settings.GetValue("SETTINGS", "effectType", 2);
+            flashEnabled = Settings.GetValue("SETTINGS", "flash", true);
             Tick += onTick;
 
         }
@@ -86,7 +88,7 @@ public Main()
                     }
             }
            
-            if (force > flashThresh)
+            if (force > flashThresh && flashEnabled)
             {
                 flash();
             }
@@ -118,12 +120,12 @@ public Main()
                 switch (effectType)
                 {
                     case 0:
-                        //Function.Call(Hash._CLEAR_EXTRA_TIMECYCLE_MODIFIER);
+                        Function.Call(Hash._CLEAR_EXTRA_TIMECYCLE_MODIFIER);
                         Function.Call(Hash.SET_TIMECYCLE_MODIFIER, "NG_filmic18");
                          break;
 
                     case 1:
-                        //Function.Call(Hash._CLEAR_EXTRA_TIMECYCLE_MODIFIER);
+                        Function.Call(Hash._CLEAR_EXTRA_TIMECYCLE_MODIFIER);
                         Function.Call(Hash.SET_TIMECYCLE_MODIFIER, "hud_def_blur");
                         break;
                     case 2:
@@ -131,20 +133,7 @@ public Main()
                         Function.Call(Hash._SET_EXTRA_TIMECYCLE_MODIFIER, "hud_def_blur");
                         break;
                 }
-                
-
-                //BLUR
-
-                /* 
-                     i = 0;
-                     while (i <= 2)
-                 {
-                     Function.Call(Hash.SET_TIMECYCLE_MODIFIER_STRENGTH, (float)i / 3);
-                     Wait(0);
-                     i++;
-                 }
-                */
-
+              
                 i = 0;
                 mod = 1.0f;
                 tth = force;
@@ -153,7 +142,7 @@ public Main()
                 while (force >= i)
                 {
                     Function.Call(Hash.SET_TIMECYCLE_MODIFIER_STRENGTH, (float)mod);
-                    //Function.Call(Hash._SET_EXTRA_TIMECYCLE_MODIFIER_STRENGTH, (float)mod);
+                    Function.Call(Hash._SET_EXTRA_TIMECYCLE_MODIFIER_STRENGTH, (float)mod);
                     tth = force - i;
                     Wait(1);
                     mod = mod - dif;
