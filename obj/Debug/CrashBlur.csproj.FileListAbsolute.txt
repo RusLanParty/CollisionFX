@@ -1,9 +1,0 @@
-D:\Visual Studio\Repos\CrashBlur\bin\Debug\CrashBlur.dll
-D:\Visual Studio\Repos\CrashBlur\bin\Debug\CrashBlur.pdb
-D:\Visual Studio\Repos\CrashBlur\bin\Debug\ScriptHookVDotNet3.dll
-D:\Visual Studio\Repos\CrashBlur\bin\Debug\ScriptHookVDotNet3.xml
-D:\Visual Studio\Repos\CrashBlur\obj\Debug\CrashBlur.csproj.AssemblyReference.cache
-D:\Visual Studio\Repos\CrashBlur\obj\Debug\CrashBlur.csproj.CoreCompileInputs.cache
-D:\Visual Studio\Repos\CrashBlur\obj\Debug\CrashBlur.csproj.CopyComplete
-D:\Visual Studio\Repos\CrashBlur\obj\Debug\CrashBlur.dll
-D:\Visual Studio\Repos\CrashBlur\obj\Debug\CrashBlur.pdb
