@@ -1,121 +1,131 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using GTA;
-using GTA.Math;
 using GTA.Native;
-using static System.TimeZoneInfo;
 
 namespace CollisionFX
 {
     public class Main : Script
     {
-        float oldSpeed = 0.0f;
-        int frameSkip = 0;
-        int soundTimer = 0;
-        float blurThreshold = 7.0f;
-        float blurFadeOutTime = 0;
-        bool timecycFadedOut = true;
-        bool blurFadedOut = true;
-        float progress = 0.0f;
-        float maxDelta = 0.0f;
-        float minDelta = 0.0f;
+        static float oldSpeed = 0.0f;
+        static int frameSkip = 0;
+        public static float deltaSpeed = 0.0f;
+        float reverbTimeLeft = 0;      
+        bool blurFadingOut = false;
 
+        // Settings
+        public static ScriptSettings CollisionFXSettings;
+        string path = "scripts\\CollisionFX.ini";
+
+        static int deltaThreshold = 0;
+        static float length = 0f;
+        static bool reverb = false;
+        static bool timeCyc = false;
+        static bool blur = false;
+        static bool shake = false;
+
+        float reverbTime = 500;
+        float blurTime = 5000f;
+        float timeCycTime = 45f;
+
+        public static void LoadConfig()
+        {
+            length = (float)CollisionFXSettings.GetValue<int>("SETTINGS", "effectLength", 10) / 10;
+            deltaThreshold = CollisionFXSettings.GetValue<int>("SETTINGS", "deltaSpeedThreshold", 10);
+            timeCyc = CollisionFXSettings.GetValue<bool>("SETTINGS", "toggleTimeCyc", true);
+            blur = CollisionFXSettings.GetValue<bool>("SETTINGS", "toggleBlur", true);
+            reverb = CollisionFXSettings.GetValue<bool>("SETTINGS", "toggleReverb", true);
+            shake = CollisionFXSettings.GetValue<bool>("SETTINGS", "toggleShake", true);
+        }
         public Main()
         {
+            LoadScriptSettings();
+            LoadConfig();
             Tick += onTick;
         }
 
         public void onTick(object sender, EventArgs e)
-        {
+        {           
             Ped player = Game.Player.Character;
+            FadeOutEffects();
 
             if (player.IsInVehicle())
             {
-                Vehicle veh = player.CurrentVehicle;
-                float deltaSpeed = veh.Speed - oldSpeed;
+                deltaSpeed = GetDeltaSpeed();
 
-                if(deltaSpeed > maxDelta)
+                if(deltaSpeed > deltaThreshold)
                 {
-                    maxDelta = deltaSpeed;
-                }
-                if (deltaSpeed < minDelta)
-                {
-                    minDelta = deltaSpeed;
+                    TriggerEffect();
                 }
 
-                //GTA.UI.Screen.ShowSubtitle("maxDelta: " + maxDelta + " minDelta: " + minDelta);
+                // Debug
+                float blurTime = Function.Call<float>(Hash.GET_SCREENBLUR_FADE_CURRENT_TIME);                
+                //GTA.UI.Screen.ShowSubtitle("deltaSpeedThreshold: " + deltaThreshold + " blurTime: " + blurTime);
+            }            
+        }
+        public static float GetDeltaSpeed()
+        {
+            Ped player = Game.Player.Character;
+            Vehicle veh = player.CurrentVehicle;
+            float ds = veh.Speed - oldSpeed;
 
-                if (frameSkip > 3)
-                {
-                    oldSpeed = veh.Speed;
-                }
-                else
-                {
-                    frameSkip++;
-                }
-
-                // Timecycle effect
-                if (Math.Abs(deltaSpeed) > blurThreshold && timecycFadedOut)
-                {
-                    progress = 1.4f;
-                    if (progress > 1.4f)
-                    {
-                        progress = 1.4f;
-                    }
-                    Function.Call(Hash.SET_TIMECYCLE_MODIFIER, "NG_filmic18");
-                    Function.Call(Hash.SET_TIMECYCLE_MODIFIER_STRENGTH, progress);
-                    timecycFadedOut = false;
-                }
-                else if (!timecycFadedOut)
-                {
-                    progress -= 0.002f;
-                    Function.Call(Hash.SET_TIMECYCLE_MODIFIER_STRENGTH, progress);
-                    if (progress <= 0.0f)
-                    {
-                        progress = 0.0f;
-                        timecycFadedOut = true;
-                    }
-                }
-
-                // Blur
-                if (Math.Abs(deltaSpeed) > blurThreshold && blurFadedOut)
-                {
-                    Function.Call(Hash.SHAKE_CAM, GameplayCamera.MemoryAddress, "JOLT_SHAKE", 1.0f);
-                    Function.Call(Hash.TRIGGER_SCREENBLUR_FADE_IN, 50.0f);
-                    blurFadeOutTime = 10000;
-                }
-                float blurFadeInState = Function.Call<float>(Hash.GET_SCREENBLUR_FADE_CURRENT_TIME);
-                if (blurFadeInState >= 50.0f && blurFadedOut)
-                {
-                    Function.Call(Hash.TRIGGER_SCREENBLUR_FADE_OUT, blurFadeOutTime);
-                    blurFadedOut = false;
-                }
-                else if (blurFadeInState <= 0.0f && !blurFadedOut)
-                {
-                    blurFadeOutTime = 0.0f;
-                    blurFadedOut = true;
-                }
-                // Sound blur
-                if (Math.Abs(deltaSpeed) > blurThreshold)
-                {
-                    soundTimer = 500;
-                }
-                if (soundTimer > 0)
-                {
-                    Function.Call(Hash.SET_AUDIO_SPECIAL_EFFECT_MODE, 2);
-                    soundTimer--;
-                }
+            if (frameSkip > 3)
+            {
+                oldSpeed = veh.Speed;
             }
             else
             {
-                blurFadeOutTime = 0.0f;
-                Function.Call(Hash.TRIGGER_SCREENBLUR_FADE_OUT, 1.0f);
+                frameSkip++;
+            }            
+            return Math.Abs(ds);
+        }
+        private void TriggerEffect()
+        {
+            // Shake
+            if (shake)
+            {
+                Function.Call(Hash.SHAKE_GAMEPLAY_CAM, "JOLT_SHAKE", 1.0f);
             }
+
+            // Timecycle effect
+            if (timeCyc)
+            {
+                Function.Call(Hash.SET_TIMECYCLE_MODIFIER, "NG_filmic18");
+                Function.Call(Hash.SET_TIMECYCLE_MODIFIER_STRENGTH, 1.0f);
+                Function.Call(Hash.SET_TRANSITION_OUT_OF_TIMECYCLE_MODIFIER, timeCycTime * length);
+            }
+
+            // Blur
+            if (blur)
+            {
+                Function.Call(Hash.TRIGGER_SCREENBLUR_FADE_IN, 1.0f);
+                blurFadingOut = false;
+            }
+
+            // Reverb
+            if (reverb)
+            {
+                reverbTimeLeft = reverbTime * length;
+            }
+        }
+        private void FadeOutEffects()
+        {
+            // Blur            
+            if (!blurFadingOut)
+            {
+                Function.Call(Hash.TRIGGER_SCREENBLUR_FADE_OUT, blurTime * length);
+                blurFadingOut = true;
+            }           
+
+            // Reverb
+            if (reverbTimeLeft > 0)
+            {
+                Function.Call(Hash.SET_AUDIO_SPECIAL_EFFECT_MODE, 2);
+                reverbTimeLeft--;
+            }
+        }
+        private void LoadScriptSettings()
+        {
+            CollisionFXSettings = ScriptSettings.Load(path);
         }
     }    
 }
